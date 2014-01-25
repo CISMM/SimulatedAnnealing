@@ -1,0 +1,2 @@
+# Ignore Qt Creator's .user file
+CMakeLists.txt.user

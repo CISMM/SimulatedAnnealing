@@ -5,25 +5,27 @@
 //			it is intended for use with the double() operator
 // rcsid: @(#)cputime.hpp	1.7 11:13:22 5/14/93   EFC
 
+// Updated to 2003 C++ by Shawn Waldon in 2014
+
 //	use 	-lbsd 		when using this class
 
 #ifndef CPU_TIME_HPP_
 #define CPU_TIME_HPP_ 1.7
 
 #include <stdlib.h>
-#include <iostream.h>
+#include <iostream>
 
 class CPUTime
 {
 	private:
-	  ostream& my_os;
+      std::ostream& my_os;
 	  int no_print;
 	  double usertime, systime;
 	  void get_cpu_time();
 	public:
-	  CPUTime(ostream& user_os = cerr) : my_os(user_os), no_print(0)
+      CPUTime(std::ostream& user_os = std::cerr) : my_os(user_os), no_print(0)
 				 { report("Preprocessing"); }
-	  CPUTime(const int) : my_os(cerr), no_print(1) {}
+      CPUTime(const int) : my_os(std::cerr), no_print(1) {}
 	 ~CPUTime() 	{  report( "Total CPU" ); }
 
 	  operator double();

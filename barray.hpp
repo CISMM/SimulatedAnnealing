@@ -6,16 +6,14 @@
 //			this software for any application provided this
 //			copyright notice is preserved.
 
+// Updated to 2003 C++ by Shawn Waldon in 2014
+
 // rcsid: @(#)barray.hpp	1.17 12:27:27 6/3/96   EFC
 
 #ifndef _BASIC_ARRAY_HPP_
 #define _BASIC_ARRAY_HPP_  1.17
 
-#ifdef __ZTC__
-#include <fstream.hpp>
-#else
-#include <fstream.h>
-#endif
+#include <fstream>
 
 #include <scalar.hpp>
 
@@ -56,13 +54,13 @@ class BasicArray
         friend int operator==(const BasicArray&,const BasicArray&);    // equality
 
   	// binary read and write
-	virtual int read(ifstream &ifs, int count = -1,const int first = 0);
-	virtual int write(ofstream &ofs, int count = -1,const int first = 0) const;
+    virtual int read(std::ifstream &ifs, int count = -1,const int first = 0);
+    virtual int write(std::ofstream &ofs, int count = -1,const int first = 0) const;
 
 	// set output columns
 	void width(const int w) { wdth = w; }
-	friend istream& operator>>(istream& is, BasicArray& ary);
-	friend ostream& operator<<(ostream& os, const BasicArray& ary);
+    friend std::istream& operator>>(std::istream& is, BasicArray& ary);
+    friend std::ostream& operator<<(std::ostream& os, const BasicArray& ary);
 };
 
 

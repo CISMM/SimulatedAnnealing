@@ -1,34 +1,15 @@
 // cputime.cpp	implementation of CPUTime class
 
+// Updated to 2003 C++ by Shawn Waldon in 2014
+
 static const char rcsid[] = "@(#)cputime.c++	1.7 11:13:35 5/14/93   EFC";
 
-#ifdef CRAY
-#ifndef TIMES
-#define TIMES
-#endif
-#endif
-
-#ifdef TIMES
-#include <sys/types.h>
-#include <sys/times.h>
-#include <sys/param.h>
-
-#ifdef CRAY
-#define HZ	1000000      /* microseconds */
-#endif
-
-#ifndef HZ
-#define HZ       60
-#endif
-
-#else                             // assume RUSAGE unless TIMES is defined
 #include <sys/time.h>
 #include <sys/resource.h>
-#endif
 
 #include <cputime.hpp>
 
-#include <iomanip.h>
+#include <iomanip>
 
 CPUTime::operator double()
 {
@@ -55,33 +36,22 @@ void CPUTime::report(const char *label)
 	int old_precision = my_os.precision(4);
 
 	my_os << usertime << "u  " << systime << "s\ttotal: "
-	      << (usertime + systime) << endl << setprecision( old_precision )
-	      << flush;
+          << (usertime + systime) << std::endl;
+  my_os.precision( old_precision );
+  my_os.flush();
 
 }
 
 void CPUTime::get_cpu_time()
 {
-#ifdef TIMES
-        struct tms time;
+    struct rusage usage;
 
-        times(&time);
+    getrusage(RUSAGE_SELF, &usage);
 
-        usertime = (float)time.tms_utime / (float)HZ;
-        systime = (float)time.tms_stime / (float)HZ;
-
-#else
-
-        struct rusage usage;
-
-        getrusage(RUSAGE_SELF, &usage);
-
-        usertime = (double)usage.ru_utime.tv_sec +
-                        (double)usage.ru_utime.tv_usec / 1000000.;
-        systime = (double)usage.ru_stime.tv_sec +
-                        (double)usage.ru_stime.tv_usec / 1000000.;
-
-#endif
+    usertime = (double)usage.ru_utime.tv_sec +
+            (double)usage.ru_utime.tv_usec / 1000000.;
+    systime = (double)usage.ru_stime.tv_sec +
+            (double)usage.ru_stime.tv_usec / 1000000.;
 
 }
 

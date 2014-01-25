@@ -19,6 +19,8 @@ rcsid: @(#)r250.hpp	1.7 14:37:41 7/25/94   EFC
 
 */
 
+// Updated to 2003 C++ standard by Shawn Waldon in 2014
+
 #ifndef R250_HPP_
 #define R250_HPP_ 1.7
 
@@ -37,11 +39,7 @@ class R250 : public RandomGenerator
            R250(const long sd) { instances++;	seed(sd); }
 
           ~R250() { if ( --instances == 0 )
-#if defined( _ZTC__ ) && ( __ZTC__ <= 0x300 )
-		 	delete [250]r250_buffer;
-#else
 		 	delete []r250_buffer;
-#endif
  		  }
  
            long seed(const long sd = 0);

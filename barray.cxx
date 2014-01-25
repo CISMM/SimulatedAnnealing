@@ -5,6 +5,7 @@
 //			this software for any application provided this
 //			copyright notice is preserved.
 
+// Updated to 2003 C++ by Shawn Waldon in 2014
 
 #include <barray.hpp>
 
@@ -13,57 +14,21 @@ static const char rcsid[] = "@(#)barray.c++	1.17 12:27:14 6/3/96   EFC";
 // #define DEBUG
 // #define DEBUG_RESIZE
 
-#ifdef DEBUG
-// #include <debug.hpp>
-#include <traceback.hpp>
 
-// extern Debug debug;
-
-#endif
-
-#ifdef __TURBOC__
-#include <signal.h>
-#include <float.h>
-
-static void handler(int sig)
+BasicArray::BasicArray() : rsize(1), wdth(1), sze(1), n(sze)
 {
-#ifdef DEBUG
-	cerr << "error handler, signal = " << sig << '\n';
-#endif
-
-	// clear the error
-	_fpreset();
-	
-	signal(SIGFPE, handler);
-	
-}
-
-#endif
-
-BasicArray::BasicArray() : n(sze), sze(1), wdth(1), rsize(1)
-{
-#ifdef DEBUG
-	TraceBack tb( "BasicArray::BasicArray()");
-#endif
 	x = new scalar_type[ 1 ];
 
 }
 
-BasicArray::BasicArray(const int ni) : n(sze), sze(ni), wdth(ni+1), rsize(ni)
+BasicArray::BasicArray(const int ni) : rsize(ni), wdth(ni+1), sze(ni), n(sze)
 {
-#ifdef DEBUG
-	TraceBack tb( "BasicArray::BasicArray(int)");
-	tb << "n = " << n << endl;
-#endif
 	x = new scalar_type[ ni ];
 
 }
 
 BasicArray::BasicArray(const BasicArray& f2) : n(sze)
 {
-#ifdef DEBUG
-	TraceBack tb( "BasicArray::BasicArray(BasicArray&)");
-#endif
 	rsize = sze = f2.size();
 	wdth = f2.wdth;
 	
@@ -76,14 +41,7 @@ BasicArray::BasicArray(const BasicArray& f2) : n(sze)
 
 BasicArray::~BasicArray()
 {
-#ifdef DEBUG
-	TraceBack tb( "BasicArray::~BasicArray()");
-#endif
-#ifdef __ZTC__
-		if ( x ) delete [n]x;
-#else
 	        if ( x ) delete []x;
-#endif
 
 		x = NULL;
 		rsize = sze = 0;                 
@@ -91,19 +49,12 @@ BasicArray::~BasicArray()
 
 BasicArray& BasicArray::operator = (const BasicArray& f2)
 {
-#ifdef DEBUG
-	TraceBack tb( "BasicArray::operator=(BasicArray)");
-#endif
 	if ( this == &f2 )
 		return *this;
 
 	if ( x != NULL && rsize != f2.size() )
 	{
-#ifdef __ZTC__
-		delete [n]x;
-#else                        
 		delete []x;
-#endif
 
 		rsize = f2.size();
 		x = new scalar_type[rsize];
@@ -121,33 +72,18 @@ BasicArray& BasicArray::operator = (const BasicArray& f2)
 
 void BasicArray::trim(const int nsize)	// make the array SEEM to be smaller
 {
-#ifdef DEBUG
-	TraceBack tb( "BasicArray::trim()" );
-	tb << "BasicArray::trim( " << nsize << " ), trimming from " << sze;
-	tb << " , rsize = " << rsize << '\n';
-#endif
 	if ( nsize >= 0 && nsize <= rsize )
 		sze = nsize;
 }
 
 void BasicArray::reset(const scalar_type val)
 {
-#ifdef DEBUG
-	TraceBack tb( "BasicArray::reset(scalar assignment)" );
-	tb << "sze = " << sze << endl;
-#endif
 	for (int k = 0; k <sze; k++)
         		x[k] = val;
 }
 
 void BasicArray::resize(const int nsize)
 {
-#ifdef DEBUG_RESIZE
-	TraceBack tb( "BasicArray::rsize()" );
-	tb << "nsize = " << nsize << "  sze = " << sze << "  rsize = " << rsize
-	   << endl;
-	tb << "*x = " << x << endl;
-#endif
 	 int k, kend;
 
 	sze = nsize;
@@ -168,11 +104,7 @@ void BasicArray::resize(const int nsize)
 	 	 for (k = 0; k < kend; k++)
 				xn[k] = x[k];
 
-#ifdef __ZTC__
-	  	delete [kend]x;
-#else          
 	  	delete []x;
-#endif
 	  }
 	  else
 		for (k = 0; k < nsize; k++)
@@ -184,7 +116,7 @@ void BasicArray::resize(const int nsize)
 	  wdth = rsize + 1;
 }
 
-int BasicArray::write(ofstream &ofs, int count,const int first) const
+int BasicArray::write(std::ofstream &ofs, int count,const int first) const
 {
 	if ( count < 0 )
 		count = sze - first;
@@ -201,7 +133,7 @@ int BasicArray::write(ofstream &ofs, int count,const int first) const
  
 }
 
-int BasicArray::read(ifstream &ifs, int count,const int first)
+int BasicArray::read(std::ifstream &ifs, int count,const int first)
 {
 
 	if ( count < 0 )
@@ -221,21 +153,11 @@ int BasicArray::read(ifstream &ifs, int count,const int first)
 
 }
 
-istream& operator>> (istream& is, BasicArray& arry)
+std::istream& operator>> (std::istream& is, BasicArray& arry)
 {
 	scalar_type new_x;
 	int k, kend;
 
-#ifdef __TURBOC__
-	static int first = 1;
-
-	
-	if ( first )
-	{
-		signal( SIGFPE, handler );
-		first = 0;
-	}
-#endif
 
 	if ( is.eof() )
 		return is;
@@ -259,7 +181,7 @@ istream& operator>> (istream& is, BasicArray& arry)
 	
 }
 
-ostream& operator<< (ostream& os,const BasicArray& arry)
+std::ostream& operator<< (std::ostream& os,const BasicArray& arry)
 {
 	int iend = arry.size();
 

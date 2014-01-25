@@ -5,6 +5,8 @@
 //			this software for any application provided this
 //			copyright notice is preserved.
 
+// Updated to 2003 C++ standard by Shawn Waldon in 2014
+
 static const char rcsid[] = "@(#)rndlcg.c++	1.2 14:38:46 7/25/94   EFC";
 
 

@@ -4,22 +4,21 @@
    find the nonlinear least squares optimum solution
 
    usage:   satest2 input.file
-   
+
 */
 
-
+// Updated to 2003 C++ standard by Shawn Waldon in 2014
 
 static const char rcsid[] = "@(#)satest2.c++	1.1 09:50:25 10/30/92   EFC";
 
 #define PROGRAM "satest2"
 
-#include <iostream.h>
+#include <iostream>
 #include <stdlib.h>
 #include <math.h>
 
 #include "simann.hpp"
 
-#include <standio.hpp>
 #include <barray.hpp>
 #include <cputime.hpp>
 #include <random.hpp>
@@ -29,178 +28,159 @@ static const char rcsid[] = "@(#)satest2.c++	1.1 09:50:25 10/30/92   EFC";
 
 #define MAXIT 400
 
-float lambda = 0.0;		/* derivative weight factor */
+float lambda = 0.0; /* derivative weight factor */
 
 BasicArray x, y;
 int n;
 
-float energy(float*);		// the cost function
+float energy(float *,void*v=NULL);  // the cost function
 
-float func(float,float,float), fprime_a(float,float,float);
-float fprime_b(float,float,float);
+float func(float, float, float), fprime_a(float, float, float);
+float fprime_b(float, float, float);
 
-void main(int argc, char **argv)
+int main(int argc, char **argv)
 {
-	int i;
-	float z, t0, t;
-	float a[2];
+  int i;
+  float z, t0, t;
+  float a[2];
 
-        
-	// first read in the dataset
-	Stdin fin(&argc, argv);
-        
-	if ( !fin )
-        {
-		cerr << PROGRAM << " unable to open input file " << argv[1] << endl;
-                exit(1);
-        }
+  // first read in the dataset
+  std::filebuf fbuf;
+  if (!fbuf.open(argv[1], std::ios::in)) {
+    std::cerr << PROGRAM << " unable to open input file " << argv[1] << std::endl;
+    exit(1);
+  }
+  std::istream fin(&fbuf);
 
-	// read x, y pairs in
-	i = 0;
-	while ( !fin.eof() )
-	{
-		fin >> z;
-		if ( fin.eof() || fin.fail() )
-				break;
-		x.resize( ++i );
-		y.resize( i );
-		x[i-1] = z;
-		fin >> z;
-		y[i-1] = z;
-	}
-	n = i;
+  // read x, y pairs in
+  i = 0;
+  while (!fin.eof()) {
+    fin >> z;
+    if (fin.eof() || fin.fail()) break;
+    x.resize(++i);
+    y.resize(i);
+    x[i - 1] = z;
+    fin >> z;
+    y[i - 1] = z;
+  }
+  n = i;
 
-	cerr << n << " points read for analysis\n";
+  std::cerr << n << " points read for analysis\n";
 
-	CPUTime *cpu = new CPUTime;
+  CPUTime *cpu = new CPUTime;
 
-	SimAnneal sa(energy,2);
+  SimAnneal sa(CostFunction(energy), 2);
 
-	if ( !sa )
-        {
-        	cerr << "problem initializing SimAnneal object\n";
-                exit(1);
-        }
+  if (!sa) {
+    std::cerr << "problem initializing SimAnneal object\n";
+    exit(1);
+  }
 
-       	RUniform uniform;
+  RUniform uniform;
 
+  // now start up the estimation
+  for (i = 0; i < 2; i++) {
+    a[i] = uniform.number(0.0, 10.0);
+  }
 
-	// now start up the estimation
-	for (i = 0; i < 2; i++)
-	{
-		a[i] = uniform.number(0.0, 10.0);
-	}
+  z = energy(a);
 
-	z = energy( a );
+  sa.initial(a);  // set initial condition
 
-	
-	sa.initial( a );		// set initial condition
+  sa.Boltzmann(0.5);
+  // sa.jump( 150.0 );
 
-	sa.Boltzmann( 0.5 );
-	// sa.jump( 150.0 );
+  std::cout << "Boltzman constant: " << sa.Boltzmann()
+            << "\tlearning rate: " << sa.learning_rate() << '\n';
+  std::cout << "initial values: ";
+  for (i = 0; i < 2; i++) std::cout << a[i] << '\t';
+  std::cout << "    (energy = " << z << ")" << std::endl;
 
+  sa.melt();  // melt the system
 
-	cout << "Boltzman constant: " << sa.Boltzmann() << "\tlearning rate: "
-				      << sa.learning_rate() << '\n';
-	cout << "initial values: ";
-	for (i = 0; i < 2; i++)
-		cout << a[i] << '\t';
-	cout << "    (energy = " << z << ")" << endl;
+  sa.current(a);
+  z = energy(a);
 
-	sa.melt();		// melt the system
-
-	sa.current( a );
-	z = energy( a );
-
-	cout << "melt values   : ";
-	for (i = 0; i < 2; i++)
-		cout << a[i] << '\t';
-	cout << "    (energy = " << z << ")" << endl;
+  std::cout << "melt values   : ";
+  for (i = 0; i < 2; i++) std::cout << a[i] << '\t';
+  std::cout << "    (energy = " << z << ")" << std::endl;
 
 #ifdef MELT_ONLY
-	t0 = sa.temperature();
+  t0 = sa.temperature();
 #else
-	/* make it a bit warmer than melting temperature */
-	t0 = 1.2 * sa.temperature();
+  /* make it a bit warmer than melting temperature */
+  t0 = 1.2 * sa.temperature();
 
-	sa.temperature( t0 );
+  sa.temperature(t0);
 
-#ifndef EQUIL_ONLY	
-	t = sa.anneal( MAXIT );
-	sa.current( a );
+#ifndef EQUIL_ONLY
+  t = sa.anneal(MAXIT);
+  sa.current(a);
 #endif
 
 #endif
 
-	z = energy( a );
+  z = energy(a);
 
-	cout << "initial temperature: " << t0 << '\t';
-	cout << "final temperature: " << t << '\n';
+  std::cout << "initial temperature: " << t0 << '\t';
+  std::cout << "final temperature: " << t << '\n';
 
-	cout << "Estimated minumum at: ";
-	for (i = 0; i < 2; i++)
-		cout << a[i] << '\t';
-	cout << "    (energy = " << z << ")\n";;
+  std::cout << "Estimated minumum at: ";
+  for (i = 0; i < 2; i++) std::cout << a[i] << '\t';
+  std::cout << "    (energy = " << z << ")\n";
+  ;
 
+  sa.optimum(a);
+  z = energy(a);
 
-	sa.optimum( a );
-	z = energy( a );
+  std::cout << "Best minumum at: ";
+  for (i = 0; i < 2; i++) std::cout << a[i] << '\t';
+  std::cout << "    (energy = " << z << ")\n";
+  ;
 
-	cout << "Best minumum at: ";
-	for (i = 0; i < 2; i++)
-		cout << a[i] << '\t';
-	cout << "    (energy = " << z << ")\n";;
+  delete cpu;
 
-	delete cpu;
-        
+  return 0;
 }
 
-float func(float x,float a,float b)
+float func(float x, float a, float b)
 {
-	float f;
+  float f;
 
-	f = (1.0 - x * x / (a * a) ) * exp( - x * x / (b * b) );
+  f = (1.0 - x * x / (a * a)) * exp(-x * x / (b * b));
 
-	return f;
+  return f;
 }
 
-float fprime_a(float x,float a,float b)
+float fprime_a(float x, float a, float b)
 {
-	float f;
+  float f;
 
-	f = 2 * x * x * exp( - x * x / (b * b) ) / ( a * a * a );
+  f = 2 * x * x * exp(-x * x / (b * b)) / (a * a * a);
 
-	return f;
+  return f;
 }
 
-float fprime_b(float x,float a,float b)
+float fprime_b(float x, float a, float b)
 {
-	float f;
+  float f;
 
-	f = func(x,a,b) * 2.0 * x * x / (b * b * b);
+  f = func(x, a, b) * 2.0 * x * x / (b * b * b);
 
-	return f;
+  return f;
 }
 
 /* evaluate the sum squared error, the "energy" */
-float energy(float *a)
+float energy(float *a,void*)
 {
-	int i;
-	float sum = 0.0, val;
+  int i;
+  float sum = 0.0, val;
 
-	for (i = 0; i < n; i++)
-	{
-		val = y[i] - func( x[i], a[0], a[1] );
-		sum += val * val + 
-			lambda * ( fabs( fprime_a(x[i], a[0], a[1]) ) +
-				   fabs( fprime_b(x[i], a[0], a[1]) ) );
-	}
+  for (i = 0; i < n; i++) {
+    val = y[i] - func(x[i], a[0], a[1]);
+    sum += val * val + lambda * (fabs(fprime_a(x[i], a[0], a[1])) +
+                                 fabs(fprime_b(x[i], a[0], a[1])));
+  }
 
-	return sum;
-
+  return sum;
 }
-
-
-
-
-
