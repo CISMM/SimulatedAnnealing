@@ -30,15 +30,15 @@ static const char rcsid[] = "@(#)satest1.c++	1.1 09:50:13 10/30/92   EFC";
 
 #define MAXIT 400
 
-// float lambda = 0.1;		/* derivative weight factor */
-float lambda = 0.0;
+// double lambda = 0.1;		/* derivative weight factor */
+double lambda = 0.0;
 
-float func(float*,void*), f(float), fprime(float), newton(float);
+double func(double*,void*), f(double), fprime(double), newton(double);
 
 int main(int, char**)
 {
-  float y, t0, t;
-  float x[1], x_init;
+  double y, t0, t;
+  double x[1], x_init;
 
   SimAnneal sa(CostFunction(func), 1);
 
@@ -82,33 +82,33 @@ int main(int, char**)
 
 #ifdef EXAMPLE_1
 
-float func(float x[],void*)  // the cost function
+double func(double x[],void*)  // the cost function
 {
   return f(x[0]) + lambda * fabs(fprime(x[0]));
 }
 
-float f(float x)  // the function to minimize
+double f(double x)  // the function to minimize
 {
-  float fret;
+  double fret;
 
   fret = (x + 0.2) * x + cos(14.5 * x - 0.3);
 
   return fret;
 }
 
-float fprime(float x)
+double fprime(double x)
 {
-  float f;
+  double f;
 
   f = 0.2 + 2 * x - 14.5 * sin(14.5 * x - 0.3);
 
   return f;
 }
 
-float newton(float x) /* estimate minimum near x */
+double newton(double x) /* estimate minimum near x */
 {
   int iter;
-  float fpp;
+  double fpp;
 
   for (iter = 0; iter < 50; iter++) {
     fpp = 2.0 - 210.25 * cos(14.5 * x - 0.3);
@@ -123,35 +123,35 @@ float newton(float x) /* estimate minimum near x */
 
 #ifdef EXAMPLE_2
 
-float func(float x[])  // the cost function with constraints
+double func(double x[])  // the cost function with constraints
 {
   if (x[0] < -2.0 || x[0] > 2.0) return HUGE;
 
   return f(x[0]) + lambda * fabs(fprime(x[0]));
 }
 
-float f(float x)  // the function to minimize
+double f(double x)  // the function to minimize
 {
-  float fret;
+  double fret;
 
   fret = ((3.0 * x + 5.0) * x - 2.0) * x + 3.0;
 
   return fret;
 }
 
-float fprime(float x)
+double fprime(double x)
 {
-  float f;
+  double f;
 
   f = (9 * x + 10) * x - 2;
 
   return f;
 }
 
-float newton(float x) /* estimate minimum near x */
+double newton(double x) /* estimate minimum near x */
 {
   int iter;
-  float fpp;
+  double fpp;
 
   for (iter = 0; iter < 50; iter++) {
     fpp = 18 * x + 10;

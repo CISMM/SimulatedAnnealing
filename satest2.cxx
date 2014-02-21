@@ -28,21 +28,21 @@ static const char rcsid[] = "@(#)satest2.c++	1.1 09:50:25 10/30/92   EFC";
 
 #define MAXIT 400
 
-float lambda = 0.0; /* derivative weight factor */
+double lambda = 0.0; /* derivative weight factor */
 
 BasicArray x, y;
 int n;
 
-float energy(float *,void*v=NULL);  // the cost function
+double energy(double *,void*v=NULL);  // the cost function
 
-float func(float, float, float), fprime_a(float, float, float);
-float fprime_b(float, float, float);
+double func(double, double, double), fprime_a(double, double, double);
+double fprime_b(double, double, double);
 
 int main(int argc, char **argv)
 {
   int i;
-  float z, t0, t;
-  float a[2];
+  double z, t0, t;
+  double a[2];
 
   // first read in the dataset
   std::filebuf fbuf;
@@ -143,27 +143,27 @@ int main(int argc, char **argv)
   return 0;
 }
 
-float func(float x, float a, float b)
+double func(double x, double a, double b)
 {
-  float f;
+  double f;
 
   f = (1.0 - x * x / (a * a)) * exp(-x * x / (b * b));
 
   return f;
 }
 
-float fprime_a(float x, float a, float b)
+double fprime_a(double x, double a, double b)
 {
-  float f;
+  double f;
 
   f = 2 * x * x * exp(-x * x / (b * b)) / (a * a * a);
 
   return f;
 }
 
-float fprime_b(float x, float a, float b)
+double fprime_b(double x, double a, double b)
 {
-  float f;
+  double f;
 
   f = func(x, a, b) * 2.0 * x * x / (b * b * b);
 
@@ -171,10 +171,10 @@ float fprime_b(float x, float a, float b)
 }
 
 /* evaluate the sum squared error, the "energy" */
-float energy(float *a,void*)
+double energy(double *a,void*)
 {
   int i;
-  float sum = 0.0, val;
+  double sum = 0.0, val;
 
   for (i = 0; i < n; i++) {
     val = y[i] - func(x[i], a[0], a[1]);

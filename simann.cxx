@@ -12,7 +12,6 @@ static const char rcsid[] = "@(#)simann.c++	1.4 15:02:21 7/25/94   EFC";
 
 #include <stdlib.h>
 #include <math.h>
-#include <float.h>
 
 #include "simann.hpp"
 
@@ -35,9 +34,9 @@ SimAnneal::SimAnneal(const CostFunction& f, const int d)
 
 {
 
-  x = new float[dimension];
-  xnew = new float[dimension];
-  xbest = new float[dimension];
+  x = new double[dimension];
+  xnew = new double[dimension];
+  xbest = new double[dimension];
   y = ybest = HUGE;
 
   if (x == NULL || xnew == NULL || xbest == NULL)
@@ -53,9 +52,9 @@ int SimAnneal::set_up(CostFunction f, const int d)
 
   func = f;
 
-  x = new float[dimension];
-  xnew = new float[dimension];
-  xbest = new float[dimension];
+  x = new double[dimension];
+  xnew = new double[dimension];
+  xbest = new double[dimension];
   y = ybest = HUGE;
 
   if (x == NULL || xnew == NULL || xbest == NULL)
@@ -67,10 +66,10 @@ int SimAnneal::set_up(CostFunction f, const int d)
 }
 
 /* increase the temperature until the system "melts" */
-float SimAnneal::melt(const int iters)
+double SimAnneal::melt(const int iters)
 {
   int i, j, ok = 0;
-  float xc, ynew, t, cold, c = 0.0;
+  double xc, ynew, t, cold, c = 0.0;
 
   int n = iters;
   if (n < 1) n = maxit;
@@ -112,12 +111,12 @@ float SimAnneal::melt(const int iters)
 
 /* iterate a few times at the present temperature */
 /* to get to thermal equilibrium */
-int SimAnneal::equilibrate(const float t, const int n)
+int SimAnneal::equilibrate(const double t, const int n)
 {
   int i, j, equil = 0;
-  float xc, ynew, c, delta;
-  float* xtmp;
-  //	float p;
+  double xc, ynew, c, delta;
+  double* xtmp;
+  //	double p;
 
   delta = 1.0;
   for (i = 0; i < n; i++) {
@@ -177,11 +176,11 @@ int SimAnneal::equilibrate(const float t, const int n)
 }
 
 /* cool the system with annealing */
-float SimAnneal::anneal(const int iters)
+double SimAnneal::anneal(const int iters)
 {
   int i, j;
-  float xc, p, ynew, t, c, dt, told;
-  float* xtmp;
+  double xc, p, ynew, t, c, dt, told;
+  double* xtmp;
 
   int n = iters;
   if (n < 1) n = maxit;
@@ -236,17 +235,17 @@ float SimAnneal::anneal(const int iters)
   return t;
 }
 
-void SimAnneal::initial(float* xi)
+void SimAnneal::initial(double* xi)
 {
   for (int k = 0; k < dimension; k++) x[k] = xi[k];
 }
 
-void SimAnneal::current(float* xc)
+void SimAnneal::current(double* xc)
 {
   for (int k = 0; k < dimension; k++) xc[k] = x[k];
 }
 
-void SimAnneal::optimum(float* xb)
+void SimAnneal::optimum(double* xb)
 {
   for (int k = 0; k < dimension; k++) xb[k] = xbest[k];
 }

@@ -24,19 +24,19 @@
 struct CostFunction
 {
  public:
-  float (*function)(float*, void*);
+  double (*function)(double*, void*);
   void* data;
 
   // Constructors:
   CostFunction() : function(NULL), data(NULL) {}
-  CostFunction(float (*f)(float*, void*), void* d = NULL) : function(f), data(d)
+  CostFunction(double (*f)(double*, void*), void* d = NULL) : function(f), data(d)
   {
   }
 
-  float operator()(float* f) { return function(f, data); }
+  double operator()(double* f) { return function(f, data); }
 };
 
-//typedef float (*CostFunction)(float*);
+//typedef double (*CostFunction)(double*);
 
 class SimAnneal
 {
@@ -45,12 +45,12 @@ class SimAnneal
   CostFunction func;
   int dimension, maxit, ddwell;
   int err;
-  float* x, *xnew, *xbest;
-  float dt;      // temperature increment to use when melting
-  float c_jump;  // phase transition step size
-  float rrange;
-  float K, rho, t0, tscale, y, ybest;
-  int equilibrate(const float t, const int n);
+  double* x, *xnew, *xbest;
+  double dt;      // temperature increment to use when melting
+  double c_jump;  // phase transition step size
+  double rrange;
+  double K, rho, t0, tscale, y, ybest;
+  int equilibrate(const double t, const int n);
 
  public:
   SimAnneal()
@@ -79,8 +79,8 @@ class SimAnneal
 
   const int operator!() const { return err; }
 
-  float melt(const int iters = -1);
-  float anneal(const int iters = -1);
+  double melt(const int iters = -1);
+  double anneal(const int iters = -1);
 
   int iterations(const int m = -1)
   {
@@ -92,35 +92,35 @@ class SimAnneal
     if (d > 0) ddwell = d;
     return ddwell;
   }
-  float Boltzmann(const float k = -1.0)
+  double Boltzmann(const double k = -1.0)
   {
     if (k > 0.0) K = k;
     return K;
   }
 
-  float learning_rate(const float r = -1.0)
+  double learning_rate(const double r = -1.0)
   {
     if (r > 0.0) rho = r;
     return rho;
   }
-  float temperature(const float t = -1.0)
+  double temperature(const double t = -1.0)
   {
     if (t > 0.0) t0 = t;
     return t0;
   }
-  float jump(const float j = -1.0)
+  double jump(const double j = -1.0)
   {
     if (j > 0.0) c_jump = j;
     return c_jump;
   }
-  float range(const float r = -1.0)
+  double range(const double r = -1.0)
   {
     if (r > 0.0) rrange = r;
     return rrange;
   }
-  void initial(float* xinit);
-  void current(float* xcur);
-  void optimum(float* xopt);
+  void initial(double* xinit);
+  void current(double* xcur);
+  void optimum(double* xopt);
 };
 
 #endif
