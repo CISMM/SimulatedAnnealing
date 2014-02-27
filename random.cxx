@@ -9,10 +9,16 @@
 
 static const char rcsid[] = "@(#)random.c++	1.10 11:34:07 6/9/95   EFC";
 
-#include <math.h>
+#include <cmath>
+#include <ctime>
 
 #include <random.hpp>
 #include <errorstream.hpp>
+
+RUniform::RUniform()
+{
+  seed(time(NULL));
+}
 
 /* uniform [a, b] random variate generator */
 Real RUniform::number(const Real a, const Real b)
@@ -26,6 +32,11 @@ Real RUniform::number(const Real a, const Real b)
   return (a + (b - a) * ranf());
 }
 
+IUniform::IUniform()
+{
+  seed(time(NULL));
+}
+
 /* random integer generator, uniform */
 int IUniform::number(const int i, const int n)
 { /* return an integer in i, i+1, ... n */
@@ -37,8 +48,18 @@ int IUniform::number(const int i, const int n)
   return (int)(i + (rani() % (n - i + 1)));
 }
 
+Expntl::Expntl()
+{
+  seed(time(NULL));
+}
+
 /* negative exponential random variate generator */
 Real Expntl::number(const Real x) { return (-x * log(ranf())); }
+
+Erlang::Erlang()
+{
+  seed(time(NULL));
+}
 
 /* erlang random variate generator */
 Real Erlang::number(const Real x, const Real s)
@@ -55,6 +76,11 @@ Real Erlang::number(const Real x, const Real s)
   k = (int)(z * z);
   for (i = 0, z = 1.0; i < k; i++) z *= ranf();
   return (-(x / k) * log(z));
+}
+
+Hyperx::Hyperx()
+{
+  seed(time(NULL));
 }
 
 /* hyperexponential random variate generator */
@@ -74,6 +100,13 @@ Real Hyperx::number(const Real x, const Real s)
   z = (ranf() > p) ? (x / (1.0 - p)) : (x / p);
 
   return (-0.5 * z * log(ranf()));
+}
+
+Normal::Normal()
+  : z2(0.0),
+    use_z2(1)
+{
+  seed(time(NULL));
 }
 
 /* normal random variate generator */

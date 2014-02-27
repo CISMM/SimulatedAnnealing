@@ -61,7 +61,7 @@ class RandomGeneratorBase : public RandomGenerator
 class RUniform : public RandomGeneratorBase
 {
  public:
-  RUniform() {}
+  RUniform();
   RUniform(const long useed) { seed(useed); }
   ~RUniform() {}
   Real number(const Real a = 0.0, const Real b = 1.0);
@@ -70,7 +70,7 @@ class RUniform : public RandomGeneratorBase
 class IUniform : public RandomGeneratorBase
 {
  public:
-  IUniform() {}
+  IUniform();
   IUniform(const long useed) { seed(useed); }
   ~IUniform() {}
   int number(const int a, const int b);
@@ -79,7 +79,7 @@ class IUniform : public RandomGeneratorBase
 class Expntl : public RandomGeneratorBase
 {
  public:
-  Expntl() {}
+  Expntl();
   Expntl(const long useed) { seed(useed); }
   ~Expntl() {}
   Real number(const Real a);
@@ -88,7 +88,7 @@ class Expntl : public RandomGeneratorBase
 class Erlang : public RandomGeneratorBase
 {
  public:
-  Erlang() {}
+  Erlang();
   Erlang(const long useed) { seed(useed); }
   ~Erlang() {}
   Real number(const Real a, const Real b);
@@ -97,7 +97,7 @@ class Erlang : public RandomGeneratorBase
 class Hyperx : public RandomGeneratorBase
 {
  public:
-  Hyperx() {}
+  Hyperx();
   Hyperx(const long useed) { seed(useed); }
   ~Hyperx() {}
   Real number(const Real a, const Real b);
@@ -110,7 +110,7 @@ class Normal : public RandomGeneratorBase
   int use_z2;
 
  public:
-  Normal() : z2(0.0), use_z2(1) {}
+  Normal();
   Normal(const long useed) : z2(0.0), use_z2(1) { seed(useed); }
   ~Normal() {}
   Real number(const Real a, const Real b);
