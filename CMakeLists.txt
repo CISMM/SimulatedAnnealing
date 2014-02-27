@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.8)
 Project(simanneal_cpp)
 
 INCLUDE_DIRECTORIES(
-    ${PROJECT_SOURCE_DIR}
+    ${simanneal_cpp_SOURCE_DIR}
 )
 
 SET(simanneal_library_sources
@@ -38,7 +38,7 @@ SET(test2_src
   satest2.cxx
 )
 
-ADD_LIBRARY(simann ${simanneal_library_sources} ${simanneal_library_headers})
+ADD_LIBRARY(simann ${simanneal_library_headers} ${simanneal_library_sources})
 
 ADD_EXECUTABLE(satest1 ${test1_src})
 TARGET_LINK_LIBRARIES( satest1

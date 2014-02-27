@@ -10,8 +10,8 @@
 
 static const char rcsid[] = "@(#)simann.c++	1.4 15:02:21 7/25/94   EFC";
 
-#include <stdlib.h>
-#include <math.h>
+#include <cstdlib>
+#include <cmath>
 
 #include "simann.hpp"
 
@@ -235,7 +235,7 @@ double SimAnneal::anneal(const int iters)
   return t;
 }
 
-void SimAnneal::initial(double* xi)
+void SimAnneal::initial(const double* xi)
 {
   for (int k = 0; k < dimension; k++) x[k] = xi[k];
 }

@@ -105,7 +105,7 @@ class SimAnneal
   }
   double temperature(const double t = -1.0)
   {
-    if (t > 0.0) t0 = t;
+    if (t >= 0.0) t0 = t;
     return t0;
   }
   double jump(const double j = -1.0)
@@ -118,7 +118,7 @@ class SimAnneal
     if (r > 0.0) rrange = r;
     return rrange;
   }
-  void initial(double* xinit);
+  void initial(const double* xinit);
   void current(double* xcur);
   void optimum(double* xopt);
 };
