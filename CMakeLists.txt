@@ -38,7 +38,13 @@ SET(test2_src
   satest2.cxx
 )
 
+OPTION(SIMANNEAL_BUILD_SHARED OFF)
+
+IF(${SIMANNEAL_BUILD_SHARED})
+ADD_LIBRARY(simann SHARED ${simanneal_library_headers} ${simanneal_library_sources})
+ELSE()
 ADD_LIBRARY(simann ${simanneal_library_headers} ${simanneal_library_sources})
+ENDIF(${SIMANNEAL_BUILD_SHARED})
 
 ADD_EXECUTABLE(satest1 ${test1_src})
 TARGET_LINK_LIBRARIES( satest1
