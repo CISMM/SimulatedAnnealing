@@ -72,7 +72,7 @@ double SimAnneal::melt(const int iters)
   double xc, ynew, t, cold, c = 0.0;
 
   int n = iters;
-  if (n < 1) n = maxit;
+  if (n < 1) n = maxit; // maxit = 400
 
   t = t0;
 
