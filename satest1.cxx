@@ -148,6 +148,11 @@ double fprime(double x)
   return f;
 }
 
+/*
+  Steepest descent method with unit steplength
+  x_k+1 = x_k - f'(x_k) / f''(x_k)
+  Stops after 50 iterations or with the second derivative is zero
+*/
 double newton(double x) /* estimate minimum near x */
 {
   int iter;
